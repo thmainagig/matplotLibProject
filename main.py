@@ -1,0 +1,32 @@
+from pandas import DataFrame, read_csv, to_datetime
+import matplotlib.pyplot as plt
+
+df = read_csv('QueryResults.csv', names=['DATE', 'TAG', 'POSTS'], header=0)
+print(df.groupby('TAG').sum())
+print(df.groupby('TAG').count())
+print(type(df['DATE'][3]))
+df.DATE = to_datetime(df.DATE)
+print(df.head())
+pivoted_df = df.pivot(index='DATE', columns='TAG')
+print(pivoted_df.fillna(0, inplace=True))
+print(pivoted_df.head())
+print(pivoted_df.isna().values.any())
+# plt.figure()
+# plt.xlabel('Date')
+# plt.ylabel('No of Posts')
+# plt.ylim(0, 40000)
+# plt.title('Programming Languages')
+# for column in pivoted_df:
+#     plt.plot(pivoted_df.index, pivoted_df[column], label=pivoted_df[column].name)
+# plt.legend(fontsize=4)
+# plt.show()
+roll_df = pivoted_df.rolling(window=6).mean()
+plt.figure()
+plt.xlabel('Date')
+plt.ylabel('No of Posts')
+plt.ylim(0,40000)
+plt.title('Programming')
+for column in roll_df:
+    plt.plot(roll_df.index, roll_df[column], label=roll_df[column].name)
+plt.legend(fontsize=3)
+plt.show()
